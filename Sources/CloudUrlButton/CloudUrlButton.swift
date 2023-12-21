@@ -6,21 +6,35 @@ import Get
 
 struct CloudUrlButton: View {
     
-//    @AppStorage("cloud_url")
-//    var cloudUrl: URL = URL(string: "https://axxoncloud-test1.axxoncloud.com/")!
-//    
-    //@State
+    /// sample: https://axxoncloud-test1.axxoncloud.com/
     @AppStorage("cloud_url")
     var url: URL = CloudUrlKey.defaultValue.wrappedValue
-    //URL(string: "https://axxoncloud-test1.axxoncloud.com/")!
     
     /// take string from /resultObject/branchName
-    @State var branchName: String = "TODO: load from /api/v1/about"
+    /// or show error if cloud is not available
+    @State var branchNameOrError: Result<String, Error> = .success("TODO: load from /api/v1/about") 
     @State var changeUrl: Bool = false
+    
+    var aboutStr: String {
+        switch branchNameOrError {
+        case .success(let s):
+            return s
+        case .failure(let e):
+            return e.localizedDescription
+        }
+    }
+    var isOK: Bool {
+        switch branchNameOrError {
+        case .success(_):
+            return true
+        case .failure(_):
+            return false
+        }
+    }
     
     var body: some View {
         Button(action: { changeUrl.toggle() }) {
-            Row(title: url.pretty(), subtitle: branchName)
+            Row(title: url.pretty(), subtitle: aboutStr, isOK: isOK)
             .frame(height: 24)
             .frame(maxWidth: .infinity)
         }
@@ -31,41 +45,7 @@ struct CloudUrlButton: View {
         .task {
             await loadAbout()
         }
-    }
-    
-}
-
-extension CloudUrlButton {
-    func loadAbout() async {
-        //TODO: need to ensure that this is called only once
-        print(#function)
-        do {
-            let http = APIClient(baseURL: url)
-            
-            let r = try await http.send(about()).value
-            //self.about = .success(r.resultObject?.branchName ?? "-")
-            print(r.resultObject?.branchName ?? "-")
-            
-            self.branchName = r.resultObject?.branchName ?? "-"
-        } catch {
-            self.branchName = error.localizedDescription
-        }
-    }
-    
-    public func about() -> Request<CloudObjectResponse<About>> {
-        return Request(path: "/api/v1/about", method: .get, id: "about")
-    }
-}
-
-struct CloudUrlKey: EnvironmentKey {
-    static var defaultValue: Binding<URL> = Binding.constant(URL(string: "https://axxoncloud-test1.axxoncloud.com/")!)
-}
-
-extension EnvironmentValues {
-    var cloudUrl: Binding<URL> {
-        get { self[CloudUrlKey.self] }
-        set { self[CloudUrlKey.self] = newValue }
-    }
+    }    
 }
 
 #Preview {

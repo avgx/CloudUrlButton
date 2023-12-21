@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct CloudObjectResponse<T: Codable> : Codable {
+struct CloudObjectResponse<T: Codable> : Codable {
     public let result: String
     public let statusCode: Int
     public let messageKey: String?
@@ -18,7 +18,7 @@ public struct CloudObjectResponse<T: Codable> : Codable {
     public let resultObject: T?    
 }
 
-public struct About : Codable {
+struct About : Codable {
     public let planKey: String?
     public let buildNumber: String
     public let branchName: String
