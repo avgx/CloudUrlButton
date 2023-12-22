@@ -24,3 +24,26 @@ struct About : Codable {
     public let branchName: String
     public let revisionNumber: String?
 }
+
+class Clouds: ObservableObject {
+    @Published
+    var cloud: [String]
+    
+    @Published
+    var actualCloudIndex: Int
+    
+    init() {
+        cloud = [""]
+        actualCloudIndex = 0
+    }
+    
+    init(cloud: [String], actualCloudIndex: Int) {
+        self.cloud = cloud
+        self.actualCloudIndex = actualCloudIndex
+    }
+    
+    func loadClouds(cloud: [String], actualCloudIndex: Int) async {
+        self.cloud = cloud
+        self.actualCloudIndex = actualCloudIndex
+    }
+}
