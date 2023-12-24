@@ -10,9 +10,6 @@ struct CloudUrlButton: View {
     @AppStorage("cloud_url")
     var url: URL = CloudUrlKey.defaultValue.wrappedValue
     
-    @ObservedObject
-    var clouds: Clouds = Clouds()
-    
     /// take string from /resultObject/branchName
     /// or show error if cloud is not available
     @State var branchNameOrError: Result<String, Error> = .success("TODO: load from /api/v1/about") 
@@ -37,25 +34,16 @@ struct CloudUrlButton: View {
     
     var body: some View {
         Button(action: { changeUrl.toggle() }) {
-            Row(title: clouds.cloud[clouds.actualCloudIndex], subtitle: aboutStr, isOK: isOK)
+            Row(title: url.pretty(), subtitle: aboutStr, isOK: isOK)
             .frame(height: 24)
             .frame(maxWidth: .infinity)
         }
         .sheet(isPresented: $changeUrl, content: {
             CloudUrlDialog()
                 .environment(\.cloudUrl, $url)
-                .environmentObject(clouds)
         })
         .task {
             await loadAbout()
-            let cloudsArray = [
-                "axxoncloud-test5.com",
-                "axxoncloud-test88.com",
-                "axxoncloud-test8000.com",
-                "axxoncloud-test9.com",
-                "\(url.pretty())"
-            ]
-            await clouds.loadClouds(cloud: cloudsArray, actualCloudIndex: cloudsArray.count-1)
         }
     }    
 }
