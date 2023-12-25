@@ -8,7 +8,7 @@
 import SwiftUI
 import Get
 
-extension CloudUrlButton {
+extension Row {
     func loadAbout() async {
         //TODO: need to ensure that this is called only once
         print(#function)
@@ -18,9 +18,9 @@ extension CloudUrlButton {
             let r = try await http.send(about()).value
             print(r.resultObject?.branchName ?? "-")
             
-            self.branchNameOrError = .success(r.resultObject?.branchName ?? "-")
+            branchNameOrError = .success(r.resultObject?.branchName ?? "-")
         } catch {
-            self.branchNameOrError = .failure(error)
+            branchNameOrError = .failure(error)
         }
     }
     

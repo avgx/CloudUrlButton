@@ -8,21 +8,18 @@
 import SwiftUI
 
 struct CloudUrlDialog: View {
-    
-    @Environment(\.cloudUrl)
-    private var url: Binding<URL>
-    
-    @AppStorage("actual_cloud_index")
-    private var actualCloudIndex: Int = 0
+        
+    @AppStorage("cloud_url")
+    var actualUrl: URL = CloudUrlKey.defaultValue.wrappedValue
     
     @AppStorage("cloud")
-    private var clouds: [URL?] = []
+    private var clouds: [URL] = []
     
     @State
     private var editMode: EditMode = .inactive
     
-    @FocusState
-    private var focus: Int?
+    @State
+    private var isShowingSheet = false
     
     var body: some View {
         if #available(iOS 16.0, *) {
@@ -42,17 +39,55 @@ struct CloudUrlDialog: View {
     var content: some View {
         List {
             ForEach(Array(clouds.enumerated()), id: \.offset) { index, cloud in
-                if editMode == .active {
-                    createTextField(cloud: cloud, index: index)
-                } else {
-                    createText(cloud: cloud, index: index)
+                HStack {
+                    Row(url: cloud, typeOfRow: .list)
+                        .onTapGesture {
+                            tapCloudAction(cloud: cloud)
+                        }
+                        .swipeActions {
+                            Button(action: {
+                                removeCloud(cloud: cloud)
+                            }, label: {
+                                Image(systemName: "trash")
+                            })
+                            .tint(.red)
+                            
+                            Button(action: {
+                                actualUrl = cloud
+                                isShowingSheet.toggle()
+                            }, label: {
+                                Image(systemName: "pencil")
+                            })
+                        }
+                    if actualUrl == cloud {
+                        Image(systemName: "checkmark")
+                    }
                 }
             }
-            .onDelete(perform: { _ in })
+            .onDelete(perform: { indexSet in
+                clouds.remove(atOffsets: indexSet)
+            })
+        }
+        .sheet(isPresented: $isShowingSheet) {
+            Text("Cloud name")
+                .font(.system(size: 36))
+                .bold()
+            TextField("Cloud name", text: Binding<String> (
+                get: {
+                    actualUrl.absoluteString
+                },
+                set: { newValue in
+                    guard let newUrl = URL(string: newValue),
+                          let index = clouds.firstIndex(of: actualUrl)
+                    else { return }
+                    actualUrl = newUrl
+                    clouds[index] = actualUrl
+                }))
+            Spacer()
         }
         .onAppear {
             if clouds.count == 0 {
-                clouds.append(url.wrappedValue)
+                clouds.append(actualUrl)
             }
         }
         .toolbar(content: {
@@ -72,95 +107,26 @@ struct CloudUrlDialog: View {
         .environment(\.editMode, $editMode)
     }
     
-    private func createTextField(cloud: URL?, index: Int) -> some View {
-        HStack {
-            TextField("Cloud name", text: Binding<String> (
-                get: {
-                    cloud?.absoluteString ?? ""
-                },
-                set: { newValue in
-                    guard let newUrl = URL(string: newValue)
-                    else {
-                        clouds[index] = URL(string: "")
-                        return
-                    }
-                    clouds[index] = newUrl
-                }))
-            .focused($focus, equals: index)
-            .onTapGesture {
-                tapCloudAction(index: index)
-            }
-            .swipeActions {
-                Button(action: {
-                    deleteCloudAction(index: index)
-                }, label: {
-                    Image(systemName: "trash")
-                })
-                .tint(.red)
-                
-                Button(action: {
-                    editCloudAction(index: index)
-                }, label: {
-                    Image(systemName: "pencil")
-                })
-            }
-            if actualCloudIndex == index {
-                Image(systemName: "checkmark")
-            }
-        }
+    private func tapCloudAction(cloud: URL) {
+        actualUrl = cloud
     }
     
-    private func createText(cloud: URL?, index: Int) -> some View {
-        HStack {
-            Text(cloud?.pretty() ?? "")
-                .onTapGesture {
-                    tapCloudAction(index: index)
-                }
-                .swipeActions {
-                    Button(action: {
-                        deleteCloudAction(index: index)
-                    }, label: {
-                        Image(systemName: "trash")
-                    })
-                    .tint(.red)
-                    
-                    Button(action: {
-                        editCloudAction(index: index)
-                    }, label: {
-                        Image(systemName: "pencil")
-                    })
-                }
-            if actualCloudIndex == index {
-                Image(systemName: "checkmark")
-            }
-        }
-    }
-    
-    private func tapCloudAction(index: Int) {
-        actualCloudIndex = index
-    }
-    
-    private func deleteCloudAction(index: Int) {
-        if actualCloudIndex == index && clouds.count > 1 {
-            actualCloudIndex = 0
-            clouds.remove(at: index)
-        } else if clouds.count > 1 {
-            clouds.remove(at: index)
-        }
-    }
-    
-    private func editCloudAction(index: Int) {
+    private func editCloudAction() {
         editMode = .active
-        focus = index
+    }
+    
+    private func removeCloud(cloud: URL) {
+        guard let index = clouds.firstIndex(of: cloud)
+        else { return }
+        clouds.remove(at: index)
     }
     
     private func addCloudAction() {
-        if let lastCloud = clouds.last,
-           lastCloud?.absoluteString.count != nil {
-            clouds.append(URL(string: ""))
-        }
-        editMode = .active
-        focus = clouds.count - 1
+        guard let lastUrl = URL(string: "https://")
+        else { return }
+        clouds.append(lastUrl)
+        actualUrl = lastUrl
+        isShowingSheet.toggle()
     }
 }
 

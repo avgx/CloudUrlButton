@@ -10,31 +10,14 @@ struct CloudUrlButton: View {
     @AppStorage("cloud_url")
     var url: URL = CloudUrlKey.defaultValue.wrappedValue
     
-    /// take string from /resultObject/branchName
-    /// or show error if cloud is not available
-    @State var branchNameOrError: Result<String, Error> = .success("TODO: load from /api/v1/about") 
-    @State var changeUrl: Bool = false
-    
-    var aboutStr: String {
-        switch branchNameOrError {
-        case .success(let s):
-            return s
-        case .failure(let e):
-            return e.localizedDescription
-        }
-    }
-    var isOK: Bool {
-        switch branchNameOrError {
-        case .success(_):
-            return true
-        case .failure(_):
-            return false
-        }
-    }
-    
+    @State 
+    var changeUrl: Bool = false
+        
     var body: some View {
-        Button(action: { changeUrl.toggle() }) {
-            Row(title: url.pretty(), subtitle: aboutStr, isOK: isOK)
+        Button(action: {
+            changeUrl.toggle()
+        }) {
+            Row(url: url, typeOfRow: .buttton)
             .frame(height: 24)
             .frame(maxWidth: .infinity)
         }
@@ -42,9 +25,6 @@ struct CloudUrlButton: View {
             CloudUrlDialog()
                 .environment(\.cloudUrl, $url)
         })
-        .task {
-            await loadAbout()
-        }
     }    
 }
 
