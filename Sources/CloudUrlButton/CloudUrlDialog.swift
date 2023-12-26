@@ -68,7 +68,7 @@ struct CloudUrlDialog: View {
                 clouds.remove(atOffsets: indexSet)
             })
         }
-        .sheet(isPresented: $isShowingSheet) {
+        .sheet(isPresented: $isShowingSheet, onDismiss: didDismissSheet) {
             Text("Cloud name")
                 .font(.system(size: 36))
                 .bold()
@@ -118,7 +118,16 @@ struct CloudUrlDialog: View {
     private func removeCloud(cloud: URL) {
         guard let index = clouds.firstIndex(of: cloud)
         else { return }
-        clouds.remove(at: index)
+        if actualUrl == cloud && clouds.count > 1 {
+            if index == 0 {
+                actualUrl = clouds[index + 1]
+            } else {
+                actualUrl = clouds[index - 1]
+            }
+            clouds.remove(at: index)
+        } else if clouds.count > 1 {
+            clouds.remove(at: index)
+        }
     }
     
     private func addCloudAction() {
@@ -127,6 +136,28 @@ struct CloudUrlDialog: View {
         clouds.append(lastUrl)
         actualUrl = lastUrl
         isShowingSheet.toggle()
+    }
+    
+    private func didDismissSheet() {
+        guard let lastUrl = clouds.last
+        else { return }
+        if lastUrl.absoluteString == "https://" || lastUrl.absoluteString.count < 8 {
+            clouds.removeLast()
+            actualUrl = clouds[clouds.endIndex - 1]
+            print("LAST")
+        } else {
+            checkCreationOfLastURL(url: lastUrl)
+        }
+    }
+    
+    private func checkCreationOfLastURL(url: URL) {
+        for index in 0..<clouds.count - 1 {
+            if url == clouds[index] {
+                clouds.removeLast()
+                print("URL", url, "Cloud url", clouds[index])
+                break
+            }
+        }
     }
 }
 
