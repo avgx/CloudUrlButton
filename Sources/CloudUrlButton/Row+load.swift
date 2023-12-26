@@ -9,7 +9,7 @@ import SwiftUI
 import Get
 
 extension Row {
-    func loadAbout() async {
+    func loadAbout(url: URL) async {
         //TODO: need to ensure that this is called only once
         print(#function)
         do {

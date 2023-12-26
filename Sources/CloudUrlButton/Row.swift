@@ -13,7 +13,7 @@ enum RowType {
 }
 
 struct Row: View {
-    let url: URL
+    var url: URL
     let typeOfRow: RowType
     
     private var iconName: String {
@@ -75,9 +75,13 @@ struct Row: View {
             }
         }
         .task {
-            print("ABPBA")
-            await loadAbout()
+            await loadAbout(url: url)
         }
+        .onChange(of: url, perform: { newUrl in
+            Task {
+                await loadAbout(url: newUrl)
+            }
+        })
     }
 }
 

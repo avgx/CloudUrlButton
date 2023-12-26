@@ -23,9 +23,8 @@ struct CloudUrlButton: View {
         }
         .sheet(isPresented: $changeUrl, content: {
             CloudUrlDialog()
-                .environment(\.cloudUrl, $url)
         })
-    }    
+    }
 }
 
 #Preview {
