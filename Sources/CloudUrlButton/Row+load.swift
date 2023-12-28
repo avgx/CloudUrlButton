@@ -9,9 +9,20 @@ import SwiftUI
 import Get
 
 extension Row {
-    func loadAbout(url: URL) async {
-        //TODO: need to ensure that this is called only once
+    
+    func loadAbout(newUrl: URL) async {
         print(#function)
+        await loadAboutURL(url: newUrl)
+    }
+    
+    func loadAbout() async {
+        print(#function)
+        await loadAboutURL(url: url)
+    }
+    
+    private func loadAboutURL(url: URL) async {
+        //TODO: need to ensure that this is called only once
+        
         do {
             let http = APIClient(baseURL: url)
             

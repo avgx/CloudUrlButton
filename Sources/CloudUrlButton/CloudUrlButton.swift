@@ -17,12 +17,12 @@ struct CloudUrlButton: View {
         Button(action: {
             changeUrl.toggle()
         }) {
-            Row(url: url, typeOfRow: .buttton)
+            Row(url: url, typeOfRow: .button)
             .frame(height: 24)
             .frame(maxWidth: .infinity)
         }
         .sheet(isPresented: $changeUrl, content: {
-            CloudUrlDialog()
+            CloudUrlDialog(url: $url)
         })
     }
 }

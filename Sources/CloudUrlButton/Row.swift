@@ -1,19 +1,19 @@
 //
 //  SwiftUIView.swift
-//  
+//
 //
 //  Created by Alexey Govorovsky on 21.12.2023.
 //
 
 import SwiftUI
 
-enum RowType {
-    case buttton
-    case list
-}
-
 struct Row: View {
-    var url: URL
+    enum RowType {
+        case button
+        case list
+    }
+    
+    let url: URL
     let typeOfRow: RowType
     
     private var iconName: String {
@@ -24,7 +24,6 @@ struct Row: View {
     /// or show error if cloud is not available
     @State
     var branchNameOrError: Result<String, Error> = .success("TODO: load from /api/v1/about")
-    
     
     private var aboutStr: String {
         switch branchNameOrError {
@@ -54,7 +53,7 @@ struct Row: View {
             Image(systemName: iconName)
             VStack(alignment: .leading) {
                 switch typeOfRow {
-                case .buttton:
+                case .button:
                     Text(url.pretty())
                         .font(.headline)
                         .minimumScaleFactor(0.3)
@@ -67,19 +66,25 @@ struct Row: View {
                     Text(url.pretty())
                         .font(.headline)
                         .minimumScaleFactor(0.3)
+                    Text(aboutStr)
+                        .font(.subheadline)
+                        .minimumScaleFactor(0.3)
                 }
             }
             Spacer()
-            if typeOfRow == .buttton {
+            if typeOfRow == .button {
                 Image(systemName: "chevron.down")
             }
         }
         .task {
-            await loadAbout(url: url)
+            await loadAbout()
         }
         .onChange(of: url, perform: { newUrl in
-            Task {
-                await loadAbout(url: newUrl)
+            if typeOfRow == .button {
+                Task {
+                    await loadAbout(newUrl: newUrl)
+                    print(newUrl)
+                }
             }
         })
     }
@@ -87,7 +92,8 @@ struct Row: View {
 
 #Preview {
     Group {
-        Row(url: URL(string: "https://axxoncloud-test1.axxoncloud.com/")!, typeOfRow: .list)
-        Row(url: URL(string: "https://axxoncloud-test.axxoncloud.com/")!, typeOfRow: .buttton)
+        Row(url: URL(string: "https://axxoncloud-test1.axxoncloud.com/")!, typeOfRow: .button)
+        Row(url: URL(string: "https://axxoncloud-test.axxoncloud.com/")!, typeOfRow: .list)
+        Row(url: URL(string: "https://temp-uri.org")!, typeOfRow: .list)
     }
 }
