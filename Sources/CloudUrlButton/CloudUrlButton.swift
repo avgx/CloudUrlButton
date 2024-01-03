@@ -4,7 +4,11 @@
 import SwiftUI
 import Get
 
-struct CloudUrlButton: View {
+public struct CloudUrlButton: View {
+    
+    public init() {
+        
+    }
     
     /// sample: https://axxoncloud-test1.axxoncloud.com/
     @AppStorage("cloud_url")
@@ -13,7 +17,7 @@ struct CloudUrlButton: View {
     @State 
     var changeUrl: Bool = false
         
-    var body: some View {
+    public var body: some View {
         Button(action: {
             changeUrl.toggle()
         }) {
@@ -22,7 +26,8 @@ struct CloudUrlButton: View {
             .frame(maxWidth: .infinity)
         }
         .sheet(isPresented: $changeUrl, content: {
-            CloudUrlDialog(url: $url)
+            CloudUrlDialog()
+                .environment(\.cloudUrl, $url)
         })
     }
 }

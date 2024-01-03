@@ -20,20 +20,6 @@ struct Row: View {
         return isOK ? "icloud" : "icloud.slash"
     }
     
-    /// take string from /resultObject/branchName
-    /// or show error if cloud is not available
-    @State
-    var branchNameOrError: Result<String, Error> = .success("TODO: load from /api/v1/about")
-    
-    private var aboutStr: String {
-        switch branchNameOrError {
-        case .success(let s):
-            return s
-        case .failure(let e):
-            return e.localizedDescription
-        }
-    }
-    
     private var isOK: Bool {
         switch branchNameOrError {
         case .success(_):
@@ -42,6 +28,9 @@ struct Row: View {
             return false
         }
     }
+    
+    @State
+    var branchNameOrError: Result<String, Error> = .success("TODO: load from /api/v1/about")
     
     init(url: URL, typeOfRow: RowType) {
         self.url = url
@@ -58,7 +47,7 @@ struct Row: View {
                         .font(.headline)
                         .minimumScaleFactor(0.3)
                         .scaledToFill()
-                    Text(aboutStr)
+                    AboutURL(url: url)
                         .font(.subheadline)
                         .minimumScaleFactor(0.3)
                         .scaledToFill()
@@ -66,7 +55,7 @@ struct Row: View {
                     Text(url.pretty())
                         .font(.headline)
                         .minimumScaleFactor(0.3)
-                    Text(aboutStr)
+                    AboutURL(url: url)
                         .font(.subheadline)
                         .minimumScaleFactor(0.3)
                 }
@@ -77,17 +66,17 @@ struct Row: View {
             }
         }
         .task {
-            await loadAbout()
+            Task {
+                branchNameOrError = try await LoadData.loadAbout(url: url)
+            }
         }
         .onChange(of: url, perform: { newUrl in
-            if typeOfRow == .button {
-                Task {
-                    await loadAbout(newUrl: newUrl)
-                    print(newUrl)
-                }
+            Task {
+                branchNameOrError = try await LoadData.loadAbout(url: newUrl)
             }
         })
     }
+    
 }
 
 #Preview {

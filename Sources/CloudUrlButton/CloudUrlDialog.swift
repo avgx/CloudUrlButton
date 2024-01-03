@@ -7,10 +7,20 @@
 
 import SwiftUI
 
+extension URL : Identifiable {
+    public var id: String { self.absoluteString }
+}
+extension String: Identifiable {
+    public var id: String { self }
+}
+
 struct CloudUrlDialog: View {
         
-    @Binding
-    var url: URL
+    @Environment(\.dismiss)
+    private var dismiss
+    
+    @Environment(\.cloudUrl)
+    var url: Binding<URL>
     
     @AppStorage("cloud")
     private var clouds: [URL] = []
@@ -18,8 +28,11 @@ struct CloudUrlDialog: View {
     @State
     private var editMode: EditMode = .inactive
     
+    @State 
+    private var editValue: URL? = nil
+    
     @State
-    private var isShowingSheet = false
+    private var isNew: Bool = false
     
     var body: some View {
         if #available(iOS 16.0, *) {
@@ -42,40 +55,54 @@ struct CloudUrlDialog: View {
                 HStack {
                     Row(url: cloud, typeOfRow: .list)
                         .onTapGesture {
-                            tapCloudAction(cloud: cloud)
-                        }
-                        .swipeActions {
-                            Button(action: {
-                                removeCloud(cloud: cloud)
-                            }, label: {
-                                Image(systemName: "trash")
-                            })
-                            .tint(.red)
-                            
-                            NavigationLink {
-                                NewCloudView(clouds: $clouds, url: $url, index: clouds.firstIndex(of: cloud))
-                            } label: {
-                                Image(systemName: "pencil")
+                            if editMode == .active {
+                                editValue = cloud
+                            } else {
+                                url.wrappedValue = cloud
+                                dismiss()
                             }
                         }
-                    if url == cloud {
+                        .swipeActions {
+                            if cloud != url.wrappedValue {
+                                Button(action: {
+                                    removeCloud(cloud)
+                                }, label: {
+                                    Image(systemName: "trash")
+                                })
+                                .tint(.red)
+                            }
+                            
+                            Button(action: {
+                                editValue = cloud
+                            }, label: {
+                                Image(systemName: "pencil")
+                            })
+                            
+                        }
+                    if url.wrappedValue == cloud {
                         Image(systemName: "checkmark")
                     }
                 }
+                .id(cloud)
             }
             .onDelete(perform: { indexSet in
                 clouds.remove(atOffsets: indexSet)
             })
         }
-        .sheet(isPresented: $isShowingSheet) {
-            NavigationView {
-                NewCloudView(clouds: $clouds, url: $url, index: nil)
-            }
+        .sheet(isPresented: $isNew, onDismiss: {
+            print("onDismiss")
+        }) { 
+            NewCloudView(value: nil, action: addOrChange)
+        }
+        .sheet(item: $editValue, onDismiss: {
+            print("onDismiss")
+            print(editValue?.absoluteString)
+            editValue = nil
+        }) { item in
+            NewCloudView(value: item, action: addOrChange)
         }
         .onAppear {
-            if clouds.count == 0 {
-                clouds.append(url)
-            }
+            validate()
         }
         .toolbar(content: {
             ToolbarItem(placement: .topBarTrailing) {
@@ -83,7 +110,7 @@ struct CloudUrlDialog: View {
             }
             ToolbarItem(placement: .topBarLeading) {
                 Button(action: {
-                    addCloudAction()
+                    isNew.toggle()
                 }, label: {
                     Image(systemName: "plus")
                 })
@@ -94,31 +121,34 @@ struct CloudUrlDialog: View {
         .environment(\.editMode, $editMode)
     }
     
-    private func tapCloudAction(cloud: URL) {
-        url = cloud
+    private func removeCloud(_ x: URL) {
+        clouds = clouds.filter({ $0 != x })
     }
     
-    private func editCloudAction() {
-        editMode = .active
+    private func addOrChange(old: URL?, res: URL) {
+        print("\(#function) \(old?.absoluteString) -> \(res.absoluteString)")
+        
+        
+        if let old,
+           let i = clouds.firstIndex(of: old) {
+            //edit
+            clouds[i] = res
+        } else {
+            //add
+            clouds.append(res)
+        }
+        validate()
     }
     
-    private func removeCloud(cloud: URL) {
-        guard let index = clouds.firstIndex(of: cloud)
-        else { return }
-        if url == cloud && clouds.count > 1 {
-            if index == 0 {
-                url = clouds[index + 1]
-            } else {
-                url = clouds[index - 1]
-            }
-            clouds.remove(at: index)
-        } else if clouds.count > 1 {
-            clouds.remove(at: index)
+    /// the validation
+    private func validate() {
+         print(clouds)
+        clouds = Array(Set(clouds)).sorted(by: { a, b in a.absoluteString < b.absoluteString })
+        if clouds.count == 0 {
+            clouds.append(url.wrappedValue)
         }
     }
-    
-    private func addCloudAction() {
-        isShowingSheet.toggle()
-    }
 }
+
+
 
