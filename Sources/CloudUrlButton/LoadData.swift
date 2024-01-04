@@ -13,13 +13,25 @@ class LoadData {
         //TODO: need to ensure that this is called only once
         print(#function)
         do {
+//            let actualURL = try await checkUrlRedirect(url: url)
+//            let http = APIClient(baseURL: actualURL)
             let http = APIClient(baseURL: url)
+//
             let r = try await http.send(about()).value
             print(r.resultObject?.branchName ?? "-")
             return .success(r.resultObject?.branchName ?? "-")
         } catch {
             return .failure(error)
         }
+    }
+//    private static func checkUrlRedirect(url: URL) async throws -> URL {
+    public static func checkUrlRedirect(url: URL) async throws -> URL {
+//
+        let (_, response) = try await URLSession.shared.data(from: url)
+        guard let response = response as? HTTPURLResponse,
+              let actualURL = response.url
+        else { return url }
+        return actualURL
     }
     
     private static func about() -> Request<CloudObjectResponse<About>> {

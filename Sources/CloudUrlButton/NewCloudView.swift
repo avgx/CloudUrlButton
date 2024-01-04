@@ -21,7 +21,7 @@ struct NewCloudView: View {
     private var isButtonDisabled: Bool = true
     
     @State
-    private var aboutText: String = ""
+    private var fixedURL: URL?
     
     public init(value: URL?, action: @escaping (URL?, URL) -> Void) {
          print("NewCloudView \(value?.absoluteString)")
@@ -51,21 +51,23 @@ struct NewCloudView: View {
                 .padding()
                 .border(Color(UIColor.secondaryLabel))
                 .onSubmit {
-                     print(text)
+                    print(text)
                     isButtonDisabled = URL(string: text) == nil
                 }
             if isButtonDisabled == false,
-               let fixedUrl = makeFixedURL() {
-                AboutURL(url: fixedUrl)
+                let url = fixedURL {
+                AboutURL(url: url)
                     .font(.subheadline)
                     .minimumScaleFactor(0.3)
                     .frame(maxWidth: .infinity)
             }
             Button(action: {
-                guard let resUrl = makeFixedURL()
-                else { return }
-                action(value, resUrl)
-                dismiss()
+                Task {
+                    guard let resUrl = await makeFixedURL()
+                    else { return }
+                    action(value, resUrl)
+                    dismiss()
+                }
             }, label: {
                 Text("Save")
                     .frame(maxWidth: .infinity)
@@ -75,8 +77,12 @@ struct NewCloudView: View {
             .disabled(isButtonDisabled)
         }
         .padding()
+        .onChange(of: text, perform: { value in
+            fixUrl()
+        })
         .onAppear {
             isButtonDisabled = URL(string: text) == nil
+            fixUrl()
         }
         .navigationTitle(value == nil ? "Add new" : "Update")
         .toolbar(content: {
@@ -88,9 +94,26 @@ struct NewCloudView: View {
         })
     }
     
-    private func makeFixedURL() -> URL? {
+    private func makeFixedURL() async -> URL? {
         let fixedRes = text.starts(with: "http://") ? text : "http://\(text)"
-        return URL(string: fixedRes)
+        guard var fixedURL = URL(string: fixedRes)
+        else { return nil }
+        do {
+            fixedURL = try await LoadData.checkUrlRedirect(url: fixedURL)
+        } catch {
+            print(error)
+        }
+        return fixedURL
+    }
+    
+    private func fixUrl() {
+        if isButtonDisabled == false {
+            Task {
+                guard let fixedURL = await makeFixedURL()
+                else { return }
+                self.fixedURL = fixedURL
+            }
+        }
     }
 }
 
