@@ -15,12 +15,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		E0311EAA2B502E570011A12F /* CloudUrl.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = CloudUrl.app; path = /Users/artemchernysh/Desktop/CloudUrlButtonIntern/Example/CloudUrl/build/Debug/CloudUrl.app; sourceTree = "<absolute>"; };
 		E0311EAD2B502E570011A12F /* CloudUrlApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudUrlApp.swift; sourceTree = "<group>"; };
 		E0311EAF2B502E570011A12F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		E0311EB12B502E580011A12F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E0311EB32B502E580011A12F /* CloudUrl.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CloudUrl.entitlements; sourceTree = "<group>"; };
 		E0311EB52B502E580011A12F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		E0311EC42B5031280011A12F /* CloudUrl.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CloudUrl.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E0311EC52B5032240011A12F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,12 +40,14 @@
 			isa = PBXGroup;
 			children = (
 				E0311EAC2B502E570011A12F /* CloudUrl */,
+				E0311EC42B5031280011A12F /* CloudUrl.app */,
 			);
 			sourceTree = "<group>";
 		};
 		E0311EAC2B502E570011A12F /* CloudUrl */ = {
 			isa = PBXGroup;
 			children = (
+				E0311EC52B5032240011A12F /* Info.plist */,
 				E0311EAD2B502E570011A12F /* CloudUrlApp.swift */,
 				E0311EAF2B502E570011A12F /* ContentView.swift */,
 				E0311EB12B502E580011A12F /* Assets.xcassets */,
@@ -82,7 +85,7 @@
 				E0311EC22B502FF90011A12F /* CloudUrlButton */,
 			);
 			productName = CloudUrl;
-			productReference = E0311EAA2B502E570011A12F /* CloudUrl.app */;
+			productReference = E0311EC42B5031280011A12F /* CloudUrl.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -273,6 +276,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CloudUrl/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -312,6 +316,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CloudUrl/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
