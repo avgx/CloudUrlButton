@@ -32,6 +32,7 @@ struct AboutURL: View {
                 }
             }
             .onChange(of: url, perform: { newUrl in
+                print(url, newUrl)
                 Task {
                     branchNameOrError = try await LoadData.loadAbout(url: newUrl)
                 }

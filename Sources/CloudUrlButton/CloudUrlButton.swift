@@ -26,8 +26,7 @@ public struct CloudUrlButton: View {
             .frame(maxWidth: .infinity)
         }
         .sheet(isPresented: $changeUrl, content: {
-            CloudUrlDialog()
-                .environment(\.cloudUrl, $url)
+            CloudUrlDialog(url: $url)
         })
     }
 }

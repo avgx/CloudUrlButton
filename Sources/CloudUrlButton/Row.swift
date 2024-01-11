@@ -54,9 +54,11 @@ struct Row: View {
                 case .list:
                     Text(url.pretty())
                         .font(.headline)
+                        .lineLimit(1)
                         .minimumScaleFactor(0.3)
                     AboutURL(url: url)
                         .font(.subheadline)
+                        .lineLimit(1)
                         .minimumScaleFactor(0.3)
                 }
             }
@@ -70,11 +72,6 @@ struct Row: View {
                 branchNameOrError = try await LoadData.loadAbout(url: url)
             }
         }
-        .onChange(of: url, perform: { newUrl in
-            Task {
-                branchNameOrError = try await LoadData.loadAbout(url: newUrl)
-            }
-        })
     }
     
 }

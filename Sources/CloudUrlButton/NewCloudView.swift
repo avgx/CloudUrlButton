@@ -20,9 +20,6 @@ struct NewCloudView: View {
     @State
     private var isButtonDisabled: Bool = true
     
-    @State
-    private var fixedURL: URL?
-    
     public init(value: URL?, action: @escaping (URL?, URL) -> Void) {
          print("NewCloudView \(value?.absoluteString)")
         self.value = value
@@ -55,7 +52,7 @@ struct NewCloudView: View {
                     isButtonDisabled = URL(string: text) == nil
                 }
             if isButtonDisabled == false,
-                let url = fixedURL {
+                let url = makeFixedURL() {
                 AboutURL(url: url)
                     .font(.subheadline)
                     .minimumScaleFactor(0.3)
@@ -63,7 +60,7 @@ struct NewCloudView: View {
             }
             Button(action: {
                 Task {
-                    guard let resUrl = await makeFixedURL()
+                    guard let resUrl = makeFixedURL()
                     else { return }
                     action(value, resUrl)
                     dismiss()
@@ -77,12 +74,8 @@ struct NewCloudView: View {
             .disabled(isButtonDisabled)
         }
         .padding()
-        .onChange(of: text, perform: { value in
-            fixUrl()
-        })
         .onAppear {
             isButtonDisabled = URL(string: text) == nil
-            fixUrl()
         }
         .navigationTitle(value == nil ? "Add new" : "Update")
         .toolbar(content: {
@@ -94,26 +87,11 @@ struct NewCloudView: View {
         })
     }
     
-    private func makeFixedURL() async -> URL? {
+    private func makeFixedURL() -> URL? {
         let fixedRes = text.starts(with: "http://") ? text : "http://\(text)"
-        guard var fixedURL = URL(string: fixedRes)
+        guard let fixedURL = URL(string: fixedRes)
         else { return nil }
-        do {
-            fixedURL = try await LoadData.checkUrlRedirect(url: fixedURL)
-        } catch {
-            print(error)
-        }
         return fixedURL
-    }
-    
-    private func fixUrl() {
-        if isButtonDisabled == false {
-            Task {
-                guard let fixedURL = await makeFixedURL()
-                else { return }
-                self.fixedURL = fixedURL
-            }
-        }
     }
 }
 

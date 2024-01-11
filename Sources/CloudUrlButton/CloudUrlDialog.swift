@@ -19,8 +19,8 @@ struct CloudUrlDialog: View {
     @Environment(\.dismiss)
     private var dismiss
     
-    @Environment(\.cloudUrl)
-    var url: Binding<URL>
+    @Binding
+    var url: URL
     
     @AppStorage("cloud")
     private var clouds: [URL] = []
@@ -58,12 +58,12 @@ struct CloudUrlDialog: View {
                             if editMode == .active {
                                 editValue = cloud
                             } else {
-                                url.wrappedValue = cloud
+                                url = cloud
                                 dismiss()
                             }
                         }
                         .swipeActions {
-                            if cloud != url.wrappedValue {
+                            if cloud != url {
                                 Button(action: {
                                     removeCloud(cloud)
                                 }, label: {
@@ -79,7 +79,7 @@ struct CloudUrlDialog: View {
                             })
                             
                         }
-                    if url.wrappedValue == cloud {
+                    if url == cloud {
                         Image(systemName: "checkmark")
                     }
                 }
@@ -128,10 +128,12 @@ struct CloudUrlDialog: View {
     private func addOrChange(old: URL?, res: URL) {
         print("\(#function) \(old?.absoluteString) -> \(res.absoluteString)")
         
-        
         if let old,
            let i = clouds.firstIndex(of: old) {
             //edit
+            if clouds[i] == url {
+                url = res
+            }
             clouds[i] = res
         } else {
             //add
@@ -145,7 +147,7 @@ struct CloudUrlDialog: View {
          print(clouds)
         clouds = Array(Set(clouds)).sorted(by: { a, b in a.absoluteString < b.absoluteString })
         if clouds.count == 0 {
-            clouds.append(url.wrappedValue)
+            clouds.append(url)
         }
     }
 }
