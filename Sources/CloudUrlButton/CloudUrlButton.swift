@@ -21,9 +21,9 @@ public struct CloudUrlButton: View {
         Button(action: {
             changeUrl.toggle()
         }) {
-            Row(url: url, typeOfRow: .button)
-            .frame(height: 24)
-            .frame(maxWidth: .infinity)
+            Row(typeOfRow: .button, url: $url)
+                .frame(height: 24)
+                .frame(maxWidth: .infinity)
         }
         .sheet(isPresented: $changeUrl, content: {
             CloudUrlDialog(url: $url)

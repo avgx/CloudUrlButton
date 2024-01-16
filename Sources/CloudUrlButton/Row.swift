@@ -13,33 +13,21 @@ struct Row: View {
         case list
     }
     
-    let url: URL
     let typeOfRow: RowType
     
-    private var iconName: String {
-        return isOK ? "icloud" : "icloud.slash"
-    }
-    
-    private var isOK: Bool {
-        switch branchNameOrError {
-        case .success(_):
-            return true
-        case .failure(_):
-            return false
-        }
-    }
+    @Binding
+    var url: URL
     
     @State
-    var branchNameOrError: Result<String, Error> = .success("TODO: load from /api/v1/about")
+    private var iconName: String = "icloud"
     
-    init(url: URL, typeOfRow: RowType) {
-        self.url = url
-        self.typeOfRow = typeOfRow
-    }
+    @State
+    var text: String = "loading..."
     
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: iconName)
+                .loadIsOk(url: $url, iconName: $iconName)
             VStack(alignment: .leading) {
                 switch typeOfRow {
                 case .button:
@@ -47,7 +35,8 @@ struct Row: View {
                         .font(.headline)
                         .minimumScaleFactor(0.3)
                         .scaledToFill()
-                    AboutURL(url: url)
+                    Text(text)
+                        .loadAbout(url: $url, text: $text)
                         .font(.subheadline)
                         .minimumScaleFactor(0.3)
                         .scaledToFill()
@@ -56,7 +45,8 @@ struct Row: View {
                         .font(.headline)
                         .lineLimit(1)
                         .minimumScaleFactor(0.3)
-                    AboutURL(url: url)
+                    Text(text)
+                        .loadAbout(url: $url, text: $text)
                         .font(.subheadline)
                         .lineLimit(1)
                         .minimumScaleFactor(0.3)
@@ -67,19 +57,15 @@ struct Row: View {
                 Image(systemName: "chevron.down")
             }
         }
-        .task {
-            Task {
-                branchNameOrError = try await LoadData.loadAbout(url: url)
-            }
-        }
+        
     }
     
 }
 
 #Preview {
     Group {
-        Row(url: URL(string: "https://axxoncloud-test1.axxoncloud.com/")!, typeOfRow: .button)
-        Row(url: URL(string: "https://axxoncloud-test.axxoncloud.com/")!, typeOfRow: .list)
-        Row(url: URL(string: "https://temp-uri.org")!, typeOfRow: .list)
+        //        Row(typeOfRow: .button, url: URL(string: "https://axxoncloud-test1.axxoncloud.com/")!)
+        //        Row(typeOfRow: .list, url: URL(string: "https://axxoncloud-test.axxoncloud.com/")!)
+        //        Row(typeOfRow: .list, url: URL(string: "https://temp-uri.org")!)
     }
 }

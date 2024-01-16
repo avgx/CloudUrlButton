@@ -53,7 +53,7 @@ struct CloudUrlDialog: View {
         List {
             ForEach(Array(clouds.enumerated()), id: \.offset) { index, cloud in
                 HStack {
-                    Row(url: cloud, typeOfRow: .list)
+                    Row(typeOfRow: .list, url: $clouds[index])
                         .onTapGesture {
                             if editMode == .active {
                                 editValue = cloud

@@ -18,6 +18,9 @@ struct NewCloudView: View {
     private var text: String = ""
     
     @State
+    private var aboutStr: String = ""
+    
+    @State
     private var isButtonDisabled: Bool = true
     
     public init(value: URL?, action: @escaping (URL?, URL) -> Void) {
@@ -53,7 +56,8 @@ struct NewCloudView: View {
                 }
             if isButtonDisabled == false,
                 let url = makeFixedURL() {
-                AboutURL(url: url)
+                Text(aboutStr)
+                    .loadAbout(url: Binding<URL>.constant(url), text: $aboutStr)
                     .font(.subheadline)
                     .minimumScaleFactor(0.3)
                     .frame(maxWidth: .infinity)

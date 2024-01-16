@@ -9,7 +9,7 @@ import SwiftUI
 import Get
 
 class LoadData {
-    public static func loadAbout(url: URL) async throws -> Result<String, Error> {
+    public static func loadURL(url: URL) async throws -> Result<String, Error> {
         //TODO: need to ensure that this is called only once
         print(#function)
         do {
@@ -20,6 +20,17 @@ class LoadData {
             return .success(r.resultObject?.branchName ?? "-")
         } catch {
             return .failure(error)
+        }
+    }
+ 
+    public static func loadAbout(url: URL) async -> String {
+        do {
+            let actualURL = try await checkUrlRedirect(url: url)
+            let http = APIClient(baseURL: actualURL)
+            let r = try await http.send(about()).value
+            return r.resultObject?.branchName ?? "-"
+        } catch {
+            return error.localizedDescription
         }
     }
     
