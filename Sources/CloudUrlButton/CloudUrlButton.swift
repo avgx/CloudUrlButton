@@ -2,12 +2,14 @@
 // https://docs.swift.org/swift-book
 
 import SwiftUI
-import Get
+//import Get
 
 public struct CloudUrlButton: View {
     
-    public init() {
-        
+    /// from https://swiftwithmajid.com/2022/02/02/microapps-architecture-in-swift-dependency-injection/
+    let loadAbout: (URL) async throws -> (URL, String)
+    public init(loadAbout: @escaping (URL) async throws -> (URL, String)) {
+        self.loadAbout = loadAbout
     }
     
     /// sample: https://axxoncloud-test1.axxoncloud.com/
@@ -21,12 +23,12 @@ public struct CloudUrlButton: View {
         Button(action: {
             changeUrl.toggle()
         }) {
-            Row(typeOfRow: .button, url: $url)
+            Row(typeOfRow: .button, url: url, loadAbout: loadAbout)
                 .frame(height: 24)
                 .frame(maxWidth: .infinity)
         }
         .sheet(isPresented: $changeUrl, content: {
-            CloudUrlDialog(url: $url)
+            CloudUrlDialog(url: $url, loadAbout: loadAbout)
         })
     }
 }
@@ -35,11 +37,18 @@ public struct CloudUrlButton: View {
     Group {
         VStack {
             Text("Select cloud url button:")
-            CloudUrlButton()
-                .buttonStyle(.bordered)
-                .controlSize(.large)
-                .buttonBorderShape(.roundedRectangle)
-                .tint(Color.orange)
+            CloudUrlButton(
+                loadAbout: { x in
+                    print("test loading \(x.absoluteString)")
+                    try? await Task.sleep(nanoseconds: 1_000_000_000)
+                    print("test loaded \(x.absoluteString)")
+                    return (x, "v1.2.3.4")
+                }
+            )
+            .buttonStyle(.bordered)
+            .controlSize(.large)
+            .buttonBorderShape(.roundedRectangle)
+            .tint(Color.orange)
         }
     }
     .padding()

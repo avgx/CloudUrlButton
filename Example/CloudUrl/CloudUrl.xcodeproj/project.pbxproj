@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		313BB3262B590A0C00DC6B17 /* Get in Frameworks */ = {isa = PBXBuildFile; productRef = 313BB3252B590A0C00DC6B17 /* Get */; };
+		313BB3292B591A7D00DC6B17 /* LoadData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 313BB3272B591A7D00DC6B17 /* LoadData.swift */; };
+		313BB32A2B591A7D00DC6B17 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 313BB3282B591A7D00DC6B17 /* Models.swift */; };
 		E0311EAE2B502E570011A12F /* CloudUrlApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0311EAD2B502E570011A12F /* CloudUrlApp.swift */; };
 		E0311EB02B502E570011A12F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0311EAF2B502E570011A12F /* ContentView.swift */; };
 		E0311EB22B502E580011A12F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E0311EB12B502E580011A12F /* Assets.xcassets */; };
@@ -15,6 +18,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		313BB3272B591A7D00DC6B17 /* LoadData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadData.swift; sourceTree = "<group>"; };
+		313BB3282B591A7D00DC6B17 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		E0311EAD2B502E570011A12F /* CloudUrlApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudUrlApp.swift; sourceTree = "<group>"; };
 		E0311EAF2B502E570011A12F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		E0311EB12B502E580011A12F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -30,6 +35,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E0311EC32B502FF90011A12F /* CloudUrlButton in Frameworks */,
+				313BB3262B590A0C00DC6B17 /* Get in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -49,6 +55,8 @@
 			children = (
 				E0311EC52B5032240011A12F /* Info.plist */,
 				E0311EAD2B502E570011A12F /* CloudUrlApp.swift */,
+				313BB3272B591A7D00DC6B17 /* LoadData.swift */,
+				313BB3282B591A7D00DC6B17 /* Models.swift */,
 				E0311EAF2B502E570011A12F /* ContentView.swift */,
 				E0311EB12B502E580011A12F /* Assets.xcassets */,
 				E0311EB32B502E580011A12F /* CloudUrl.entitlements */,
@@ -83,6 +91,7 @@
 			name = CloudUrl;
 			packageProductDependencies = (
 				E0311EC22B502FF90011A12F /* CloudUrlButton */,
+				313BB3252B590A0C00DC6B17 /* Get */,
 			);
 			productName = CloudUrl;
 			productReference = E0311EC42B5031280011A12F /* CloudUrl.app */;
@@ -114,6 +123,7 @@
 			mainGroup = E0311EA12B502E570011A12F;
 			packageReferences = (
 				E0311EC12B502FF90011A12F /* XCLocalSwiftPackageReference "../.." */,
+				313BB3242B590A0C00DC6B17 /* XCRemoteSwiftPackageReference "Get" */,
 			);
 			productRefGroup = E0311EA12B502E570011A12F;
 			projectDirPath = "";
@@ -143,6 +153,8 @@
 			files = (
 				E0311EB02B502E570011A12F /* ContentView.swift in Sources */,
 				E0311EAE2B502E570011A12F /* CloudUrlApp.swift in Sources */,
+				313BB3292B591A7D00DC6B17 /* LoadData.swift in Sources */,
+				313BB32A2B591A7D00DC6B17 /* Models.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -373,7 +385,23 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		313BB3242B590A0C00DC6B17 /* XCRemoteSwiftPackageReference "Get" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kean/Get";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.1.6;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
+		313BB3252B590A0C00DC6B17 /* Get */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 313BB3242B590A0C00DC6B17 /* XCRemoteSwiftPackageReference "Get" */;
+			productName = Get;
+		};
 		E0311EC22B502FF90011A12F /* CloudUrlButton */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = CloudUrlButton;

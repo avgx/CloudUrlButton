@@ -22,3 +22,12 @@ extension URL {
         return String(srv.absoluteString.dropFirst(2).dropLast())
     }
 }
+
+extension String {
+    public func asURL() -> URL? {
+        let text = self.lowercased()
+        let fixedRes = text.starts(with: "http://") || text.starts(with: "https://") ? text : "http://\(text)"
+        guard let fixedURL = URL(string: fixedRes) else { return nil }
+        return fixedURL
+    }
+}

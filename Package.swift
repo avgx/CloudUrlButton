@@ -17,16 +17,17 @@ let package = Package(
             targets: ["CloudUrlButton"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/kean/Get", from: "2.1.6"),
+        //.package(url: "https://github.com/kean/Get", from: "2.1.6"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
             name: "CloudUrlButton",
-        dependencies: [ "Get" ]),
+            dependencies: [ /*"Get"*/ ]
+        ),
         .testTarget(
             name: "CloudUrlButtonTests",
-            dependencies: ["CloudUrlButton", "Get"]),
+            dependencies: ["CloudUrlButton"/*, "Get"*/]),
     ]
 )

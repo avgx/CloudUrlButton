@@ -22,6 +22,8 @@ struct CloudUrlDialog: View {
     @Binding
     var url: URL
     
+    var loadAbout: (URL) async throws -> (URL, String)
+    
     @AppStorage("cloud")
     private var clouds: [URL] = []
     
@@ -53,7 +55,7 @@ struct CloudUrlDialog: View {
         List {
             ForEach(Array(clouds.enumerated()), id: \.offset) { index, cloud in
                 HStack {
-                    Row(typeOfRow: .list, url: $clouds[index])
+                    Row(typeOfRow: .list, url: clouds[index], loadAbout: loadAbout)
                         .onTapGesture {
                             if editMode == .active {
                                 editValue = cloud
@@ -92,14 +94,14 @@ struct CloudUrlDialog: View {
         .sheet(isPresented: $isNew, onDismiss: {
             print("onDismiss")
         }) { 
-            NewCloudView(value: nil, action: addOrChange)
+            NewCloudView(value: nil, action: add, loadAbout: loadAbout)
         }
         .sheet(item: $editValue, onDismiss: {
             print("onDismiss")
             print(editValue?.absoluteString)
             editValue = nil
         }) { item in
-            NewCloudView(value: item, action: addOrChange)
+            NewCloudView(value: item, action: change, loadAbout: loadAbout)
         }
         .onAppear {
             validate()
@@ -125,7 +127,14 @@ struct CloudUrlDialog: View {
         clouds = clouds.filter({ $0 != x })
     }
     
-    private func addOrChange(old: URL?, res: URL) {
+    private func add(old: URL?, res: URL) {
+        print("\(#function) \(old?.absoluteString) -> \(res.absoluteString)")
+        
+        clouds.append(res)
+        validate()
+    }
+    
+    private func change(old: URL?, res: URL) {
         print("\(#function) \(old?.absoluteString) -> \(res.absoluteString)")
         
         if let old,
@@ -135,9 +144,6 @@ struct CloudUrlDialog: View {
                 url = res
             }
             clouds[i] = res
-        } else {
-            //add
-            clouds.append(res)
         }
         validate()
     }
