@@ -17,11 +17,6 @@ struct NewCloudView: View {
     
     @State
     private var text: String = ""
-    @State
-    private var textChanging = false
-    
-    @State
-    private var aboutStr: String = ""
     
     @State
     private var isButtonDisabled: Bool = true
@@ -51,32 +46,7 @@ struct NewCloudView: View {
     @ViewBuilder
     var content: some View {
         VStack {
-            TextField("URL", text: $text)
-                .keyboardType(.URL)
-                .autocorrectionDisabled()
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.secondary.opacity(0.2))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
-                )
-                .onChange(of: text) { newValue in
-                    aboutStr = ""
-                    textChanging = true
-                }
-                .onSubmit {
-                    print(text)
-                    textChanging = false
-                    isButtonDisabled = text.asURL() == nil
-                }
-            Text(aboutStr)
-                .font(.subheadline)
-                .minimumScaleFactor(0.3)
-                .frame(maxWidth: .infinity)
-            
+            UrlTextField(text: $text, loadAbout: loadAbout, isButtonDisabled: $isButtonDisabled)
             Button(action: {
                 Task {
                     guard let resUrl = text.asURL() else {
@@ -97,23 +67,6 @@ struct NewCloudView: View {
         .padding()
         .onAppear {
             isButtonDisabled = URL(string: text) == nil
-        }
-        .onChange(of: textChanging) { changing in
-            if !changing, let url = text.asURL() {
-                Task {
-                    do {
-                        let s = try await loadAbout(url)
-                        await MainActor.run {
-                            self.text = s.0.absoluteString
-                            self.aboutStr = s.1
-                        }
-                    } catch {
-                        await MainActor.run {
-                            self.aboutStr = error.localizedDescription
-                        }
-                    }                    
-                }
-            }
         }
         .navigationTitle(value == nil ? "Add new" : "Update")
         .toolbar(content: {
