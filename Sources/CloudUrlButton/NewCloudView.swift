@@ -46,7 +46,10 @@ struct NewCloudView: View {
     @ViewBuilder
     var content: some View {
         VStack {
-            UrlTextField(text: $text, loadAbout: loadAbout, isButtonDisabled: $isButtonDisabled)
+            UrlTextField(text: $text, loadAbout: loadAbout)
+                .onSubmit {
+                    isButtonDisabled = text.asURL() == nil
+                }
             Button(action: {
                 Task {
                     guard let resUrl = text.asURL() else {

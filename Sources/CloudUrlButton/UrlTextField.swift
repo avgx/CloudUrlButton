@@ -13,19 +13,15 @@ struct UrlTextField: View {
     @Binding
     var text: String
     
-    @Binding
-    private var isButtonDisabled: Bool
-    
     @State
     private var aboutStr: String = ""
     
     @State
     private var textChanging = false
     
-    public init(text: Binding<String>, loadAbout: @escaping (URL) async throws -> (URL, String), isButtonDisabled: Binding<Bool>) {
+    public init(text: Binding<String>, loadAbout: @escaping (URL) async throws -> (URL, String)) {
         self.loadAbout = loadAbout
         self._text = text
-        self._isButtonDisabled = isButtonDisabled
     }
     
     var body: some View {
@@ -45,17 +41,12 @@ struct UrlTextField: View {
                 .onSubmit {
                     print(text)
                     textChanging = false
-                    isButtonDisabled = text.asURL() == nil
                 }
             Text(aboutStr)
                 .font(.subheadline)
                 .minimumScaleFactor(0.3)
                 .frame(maxWidth: .infinity)
                 .scaledToFill()
-//                .overlay(
-//                    RoundedRectangle(cornerRadius: 8)
-//                        .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
-//                )
         }
         .onChange(of: textChanging) { changing in
             if !changing, let url = text.asURL() {
@@ -78,5 +69,5 @@ struct UrlTextField: View {
 }
 
 #Preview {
-    UrlTextField(text: Binding<String>.constant("test"), loadAbout: { x in return (x, "123") }, isButtonDisabled: Binding<Bool>.constant(true))
+    UrlTextField(text: Binding<String>.constant("test"), loadAbout: { x in return (x, "123") })
 }
